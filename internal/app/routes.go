@@ -9,6 +9,7 @@ var Mux = http.NewServeMux()
 
 func init() {
 	Mux.Handle("GET /{$}", controllers.ServeTemplate("index.html"))
-	Mux.Handle("POST /des", http.HandlerFunc(controllers.PostDES))
-	Mux.Handle("GET /des/key", http.HandlerFunc(controllers.GetDESKey))
+	Mux.Handle("POST /cipher", http.HandlerFunc(controllers.PostCipher))
+	Mux.Handle("GET /cipher/key", http.HandlerFunc(controllers.GetCipherKey))
+	Mux.Handle("POST /perf", http.HandlerFunc(controllers.PostPerf))
 }

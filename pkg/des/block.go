@@ -1,6 +1,9 @@
 package des
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"github.com/JingBh/crypto-learn/pkg/utils"
+)
 
 // function to encipher a 64-bit block
 func EncipherBlock(input, key []byte) []byte {
@@ -14,7 +17,7 @@ func EncipherBlock(input, key []byte) []byte {
 	keys := scheduleKeys(key)
 	l, r := permuted[:4], permuted[4:]
 	for i := 0; i < 16; i++ {
-		l, r = r, xor(l, process(r, keys[i]))
+		l, r = r, utils.Xor(l, process(r, keys[i]))
 	}
 	return permute(append(r, l...), initialPermutationInverse)
 }
@@ -31,7 +34,7 @@ func DecipherBlock(input, key []byte) []byte {
 	keys := scheduleKeys(key)
 	r, l := permuted[:4], permuted[4:]
 	for i := 15; i >= 0; i-- {
-		l, r = xor(r, process(l, keys[i])), l
+		l, r = utils.Xor(r, process(l, keys[i])), l
 	}
 	return permute(append(l, r...), initialPermutationInverse)
 }
@@ -57,7 +60,7 @@ func scheduleKeys(key []byte) [][]byte {
 func permute(input, table []byte) []byte {
 	output := make([]byte, len(table)/8)
 	for i, pos := range table {
-		bit := getBit(input, pos-1)
+		bit := utils.GetBit(input, pos-1)
 		output[i/8] |= bit << (7 - i%8)
 	}
 	return output
@@ -67,14 +70,14 @@ func permute(input, table []byte) []byte {
 func process(input, key []byte) []byte {
 	output := make([]byte, 4)
 	permuted := permute(input, eSelection)
-	added := xor(permuted, key)
+	added := utils.Xor(permuted, key)
 	for i := 0; i < 8; i++ {
-		row := (getBit(added, byte(i*6)) << 1) |
-			getBit(added, byte(i*6+5))
-		col := (getBit(added, byte(i*6+1)) << 3) |
-			(getBit(added, byte(i*6+2)) << 2) |
-			(getBit(added, byte(i*6+3)) << 1) |
-			getBit(added, byte(i*6+4))
+		row := (utils.GetBit(added, byte(i*6)) << 1) |
+			utils.GetBit(added, byte(i*6+5))
+		col := (utils.GetBit(added, byte(i*6+1)) << 3) |
+			(utils.GetBit(added, byte(i*6+2)) << 2) |
+			(utils.GetBit(added, byte(i*6+3)) << 1) |
+			utils.GetBit(added, byte(i*6+4))
 		output[i/2] = (output[i/2] << 4) | sSelection[i][row*16+col]
 	}
 	return permute(output, permutation)

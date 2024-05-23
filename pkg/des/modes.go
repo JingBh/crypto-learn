@@ -1,5 +1,7 @@
 package des
 
+import "github.com/JingBh/crypto-learn/pkg/utils"
+
 type modeECB struct {
 	key []byte
 }
@@ -14,7 +16,7 @@ func ECB(key []byte) modeECB {
 }
 
 func (m modeECB) Encipher(input []byte) []byte {
-	padded := PadZero(input, 8)
+	padded := utils.PadZero(input, 8)
 	output := make([]byte, len(padded))
 	for i := 0; i < len(padded)/8; i++ {
 		res := EncipherBlock(padded[i*8:(i+1)*8], m.key)
@@ -24,13 +26,13 @@ func (m modeECB) Encipher(input []byte) []byte {
 }
 
 func (m modeECB) Decipher(input []byte) []byte {
-	padded := PadZero(input, 8)
+	padded := utils.PadZero(input, 8)
 	output := make([]byte, len(padded))
 	for i := 0; i < len(padded)/8; i++ {
 		res := DecipherBlock(padded[i*8:(i+1)*8], m.key)
 		copy(output[i*8:(i+1)*8], res)
 	}
-	return UnpadZero(output)
+	return utils.UnpadZero(output)
 }
 
 type modeCBC struct {
@@ -52,12 +54,12 @@ func CBC(key, iv []byte) modeCBC {
 }
 
 func (m modeCBC) Encipher(input []byte) []byte {
-	padded := PadZero(input, 8)
+	padded := utils.PadZero(input, 8)
 	output := make([]byte, len(padded))
 	last := make([]byte, 8)
 	copy(last, m.iv)
 	for i := 0; i < len(padded)/8; i++ {
-		res := EncipherBlock(xor(last, padded[i*8:(i+1)*8]), m.key)
+		res := EncipherBlock(utils.Xor(last, padded[i*8:(i+1)*8]), m.key)
 		copy(last, res)
 		copy(output[i*8:(i+1)*8], res)
 	}
@@ -65,14 +67,14 @@ func (m modeCBC) Encipher(input []byte) []byte {
 }
 
 func (m modeCBC) Decipher(input []byte) []byte {
-	padded := PadZero(input, 8)
+	padded := utils.PadZero(input, 8)
 	output := make([]byte, len(padded))
 	last := make([]byte, 8)
 	copy(last, m.iv)
 	for i := 0; i < len(padded)/8; i++ {
-		res := xor(last, DecipherBlock(padded[i*8:(i+1)*8], m.key))
+		res := utils.Xor(last, DecipherBlock(padded[i*8:(i+1)*8], m.key))
 		copy(last, padded[i*8:(i+1)*8])
 		copy(output[i*8:(i+1)*8], res)
 	}
-	return UnpadZero(output)
+	return utils.UnpadZero(output)
 }

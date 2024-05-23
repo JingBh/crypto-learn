@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DES Demo</title>
+  <title>AES & DES Demo</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0/css/bulma.min.css">
   <style>
     @media (prefers-color-scheme: dark) {
@@ -27,229 +27,385 @@
 <section class="hero is-light">
   <div class="hero-body">
     <h1 class="title">
-      DES Demo
+      AES & DES Demo
     </h1>
     <p class="subtitle is-6 mt-3">
       <span>22080206</span>
       <span class="ml-4">敬博浩</span>
     </p>
   </div>
+  <div class="hero-foot">
+    <div class="section py-0">
+      <nav class="tabs is-boxed">
+        <ul>
+          <li class="is-active" data-tab="cipher">
+            <a href="#">Cipher</a>
+          </li>
+          <li data-tab="perf">
+            <a href="#">Performance</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
 </section>
-<form id="form" class="section">
-  <div class="columns">
-    <div class="column">
-      <div class="field">
-        <label for="input_text" class="label">
-          Plaintext
-        </label>
-        <div class="control">
+<div class="section">
+  <form id="form">
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <label for="input_text" class="label">
+            Plaintext
+          </label>
+          <div class="control">
         <textarea
           id="input_text"
           class="textarea is-medium has-fixed-size"
           name="text"
           placeholder="Input plaintext..."
         ></textarea>
-        </div>
-        <div class="control">
-          <label class="radio">
-            <input type="radio" name="text_type" value="plain" checked>
-            Plaintext
-          </label>
-          <label class="radio">
-            <input type="radio" name="text_type" value="base64">
-            Base64
-          </label>
-          <label class="radio">
-            <input type="radio" name="text_type" value="hex">
-            Hex
-          </label>
+          </div>
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="text_type" value="plain" checked>
+              Plaintext
+            </label>
+            <label class="radio">
+              <input type="radio" name="text_type" value="base64">
+              Base64
+            </label>
+            <label class="radio">
+              <input type="radio" name="text_type" value="hex">
+              Hex
+            </label>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="column">
-      <div class="field">
-        <label for="input_cipher" class="label">Ciphertext</label>
-        <div class="control">
+      <div class="column">
+        <div class="field">
+          <label for="input_cipher" class="label">Ciphertext</label>
+          <div class="control">
         <textarea
           id="input_cipher"
           class="textarea is-medium has-fixed-size"
           name="cipher"
           placeholder="Input ciphertext..."
         ></textarea>
-        </div>
-        <div class="control">
-          <label class="radio">
-            <input type="radio" name="cipher_type" value="base64" checked>
-            Base64
-          </label>
-          <label class="radio">
-            <input type="radio" name="cipher_type" value="hex">
-            Hex
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="columns">
-    <div class="column is-flex-grow-0 is-flex-shrink-0">
-      <div class="field">
-        <label for="input_mode" class="label">
-          Mode
-        </label>
-        <div class="control">
-          <div class="select">
-            <select id="input_mode" name="mode">
-              <option value="ecb" selected>
-                ECB
-              </option>
-              <option value="cbc">
-                CBC
-              </option>
-            </select>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="column">
-      <div class="field">
-        <label for="input_key" class="label">
-          Secret Key
-        </label>
-        <div class="field has-addons mb-0">
-          <div class="control is-expanded">
-            <input id="input_key" class="input" type="text" name="key" placeholder="Input a 64-bit secret key...">
           </div>
           <div class="control">
-            <button id="button_generate-key" type="button" class="button is-dark">
-              Generate
+            <label class="radio">
+              <input type="radio" name="cipher_type" value="base64" checked>
+              Base64
+            </label>
+            <label class="radio">
+              <input type="radio" name="cipher_type" value="hex">
+              Hex
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column is-flex-grow-0 is-flex-shrink-0">
+        <div class="field">
+          <label for="input_mode" class="label">
+            Mode
+          </label>
+          <div class="control">
+            <div class="select">
+              <select id="input_mode" name="mode">
+                <option value="ecb" selected>
+                  ECB
+                </option>
+                <option value="cbc">
+                  CBC
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label for="input_key" class="label">
+            Secret Key
+          </label>
+          <div class="field has-addons mb-0">
+            <div class="control is-expanded">
+              <input id="input_key" class="input" type="text" name="key" placeholder="Input a DES, AES-128, AES-192, or AES-256 secret key...">
+            </div>
+            <div class="control">
+              <div class="dropdown is-up is-right">
+                <div class="dropdown-trigger">
+                  <button id="button_generate" type="button" class="button is-dark" aria-haspopup="true" aria-controls="dropdown_generate">
+                    Generate
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown_generate" role="menu">
+                  <div class="dropdown-content">
+                    <a href="#" class="dropdown-item" data-generate="64">
+                      64-bit (DES) key
+                    </a>
+                    <a href="#" class="dropdown-item" data-generate="128">
+                      128-bit (AES-128) key
+                    </a>
+                    <a href="#" class="dropdown-item" data-generate="192">
+                      192-bit (AES-192) key
+                    </a>
+                    <a href="#" class="dropdown-item" data-generate="256">
+                      256-bit (AES-256) key
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="key_type" value="plain" checked>
+              Plaintext
+            </label>
+            <label class="radio">
+              <input type="radio" name="key_type" value="base64">
+              Base64
+            </label>
+            <label class="radio">
+              <input type="radio" name="key_type" value="hex">
+              Hex
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="column cbc-only">
+        <div class="field">
+          <label for="input_iv" class="label">
+            Initialization Vector
+          </label>
+          <div class="control">
+            <input id="input_iv" class="input" type="text" name="iv" placeholder="Input a 64-bit (DES) or 128-bit (AES) iv value...">
+          </div>
+          <div class="control">
+            <label class="radio">
+              <input type="radio" name="iv_type" value="plain" checked>
+              Plaintext
+            </label>
+            <label class="radio">
+              <input type="radio" name="iv_type" value="base64">
+              Base64
+            </label>
+            <label class="radio">
+              <input type="radio" name="iv_type" value="hex">
+              Hex
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <div class="columns is-mobile">
+          <div class="column has-text-right">
+            <button type="submit" class="button is-dark is-fullwidth" data-type="encrypt" data-excludes="cipher">
+              Encrypt
+            </button>
+          </div>
+          <div class="column">
+            <button type="submit" class="button is-dark is-fullwidth" data-type="decrypt" data-excludes="text">
+              Decrypt
             </button>
           </div>
         </div>
-        <div class="control">
-          <label class="radio">
-            <input type="radio" name="key_type" value="plain" checked>
-            Plaintext
-          </label>
-          <label class="radio">
-            <input type="radio" name="key_type" value="base64">
-            Base64
-          </label>
-          <label class="radio">
-            <input type="radio" name="key_type" value="hex">
-            Hex
-          </label>
-        </div>
       </div>
     </div>
-    <div class="column cbc-only">
-      <div class="field">
-        <label for="input_iv" class="label">
-          Initialization Vector
-        </label>
-        <div class="control">
-          <input id="input_iv" class="input" type="text" name="iv" placeholder="Input a 64-bit iv value...">
-        </div>
-        <div class="control">
-          <label class="radio">
-            <input type="radio" name="iv_type" value="plain" checked>
-            Plaintext
-          </label>
-          <label class="radio">
-            <input type="radio" name="iv_type" value="base64">
-            Base64
-          </label>
-          <label class="radio">
-            <input type="radio" name="iv_type" value="hex">
-            Hex
-          </label>
-        </div>
-      </div>
-    </div>
+  </form>
+  <div id="perf" style="display: none">
+    <table class="table is-fullwidth">
+      <thead>
+      <tr>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <p class="is-size-7 has-text-grey-light has-text-right">
+      (encryption / decryption, unit: ms)
+    </p>
   </div>
-  <div class="field">
-    <div class="control">
-      <div class="columns is-mobile">
-        <div class="column has-text-right">
-          <button type="submit" class="button is-dark is-fullwidth" data-type="encrypt" data-excludes="cipher">
-            Encrypt
-          </button>
-        </div>
-        <div class="column">
-          <button type="submit" class="button is-dark is-fullwidth" data-type="decrypt" data-excludes="text">
-            Decrypt
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</form>
+</div>
 <script>
-  (function () {
-    const submit = (url, init) => {
-      return fetch(url, Object.assign({
-        cache: 'no-cache'
-      }, (init || {}))).then((res) => {
-        if (!res.ok) {
+(function () {
+  const submit = (url, init) => {
+    return fetch(url, Object.assign({
+      cache: 'no-cache'
+    }, (init || {}))).then((res) => {
+      if (!res.ok) {
+        console.error(res)
+        alert('Request Failed\n' + res.statusText)
+        return
+      }
+      res.json().then(({ success, message, data }) => {
+        if (!success) {
           console.error(res)
-          alert('Request Failed\n' + res.statusText)
+          alert('Request Failed\n' + message)
           return
         }
-        res.json().then(({ success, message, data }) => {
-          if (!success) {
-            console.error(res)
-            alert('Request Failed\n' + message)
+        Object.entries(data).forEach(([name, value]) => {
+          const el = document.getElementsByName(name)
+          if (el.length === 0) {
             return
           }
-          Object.entries(data).forEach(([name, value]) => {
-            const el = document.getElementsByName(name)
-            if (el.length === 0) {
-              return
-            }
-            if (el[0].type === 'radio') {
-              el.forEach((radio) => {
-                radio.checked = radio.value === value
-              })
-            } else {
-              el[0].value = value
-            }
-          })
+          if (el[0].type === 'radio') {
+            el.forEach((radio) => {
+              radio.checked = radio.value === value
+            })
+          } else {
+            el[0].value = value
+          }
         })
-      }).catch((e) => {
-        console.error(e)
-        alert('Request Failed\n' + e.message)
       })
-    }
+    }).catch((e) => {
+      console.error(e)
+      alert('Request Failed\n' + e.message)
+    })
+  }
 
-    document.getElementById('form').addEventListener('submit', (e) => {
-      e.preventDefault()
-      return false
+  let perfFetchController = null
+  const perf = () => {
+    const table = document.querySelector('#perf table')
+    const thead = table.querySelector('thead tr')
+    const tbody = table.querySelector('tbody')
+    const hint = table.nextElementSibling
+
+    // clear table
+    thead.innerHTML = ''
+    tbody.innerHTML = '<tr><td class="is-size-4 has-text-centered">Running tests...</td></tr>'
+    hint.style.display = 'none'
+
+    if (perfFetchController) {
+      perfFetchController.abort()
+    }
+    perfFetchController = new AbortController()
+
+    fetch('perf', {
+      method: 'POST',
+      headers: {
+        'Cache-Control': 'no-cache'
+      },
+      signal: perfFetchController.signal
+    }).then((res) => {
+      if (!res.ok) {
+        console.error(res)
+        tbody.innerHTML = ''
+        alert('Request Failed\n' + res.statusText)
+        return
+      }
+
+      res.json().then(({ sizes, algorithms, data }) => {
+        thead.innerHTML = '<td></td>'
+        tbody.innerHTML = ''
+
+        algorithms.forEach((v) => {
+          const th = document.createElement('th')
+          th.innerText = v
+          thead.appendChild(th)
+        })
+
+        data.forEach((v, i) => {
+          const tr = document.createElement('tr')
+          const th = document.createElement('th')
+          th.innerText = sizes[i]
+          tr.appendChild(th)
+          v.forEach(([enc, dec]) => {
+            const td = document.createElement('td')
+            td.innerText = `${Math.round(enc * 100000) / 100}ms / ${Math.round(dec * 100000) / 100}ms`
+            tr.appendChild(td)
+          })
+          tbody.appendChild(tr)
+        })
+
+        hint.style.display = ''
+      })
+    }).catch((e) => {
+      if (e.name === 'AbortError') {
+        return
+      }
+      console.error(e)
+      tbody.innerHTML = ''
+      alert('Request Failed\n' + e.message)
     })
-    document.querySelectorAll('#form [type="submit"]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const data = {
-          type: btn.getAttribute('data-type')
+  }
+
+  // Initialize tabs
+  document.querySelectorAll('.tabs li').forEach((e) => {
+    const tabName = e.getAttribute('data-tab')
+    e.querySelector('a').addEventListener('click', (ev) => {
+      ev.preventDefault()
+      document.querySelectorAll('.tabs li').forEach((e2) => {
+        if (e2.getAttribute('data-tab') === tabName) {
+          e2.classList.add('is-active')
+        } else {
+          e2.classList.remove('is-active')
         }
-        const formData = new FormData(document.getElementById('form'))
-        formData.forEach((value, name) => {
-          data[name] = value
-        })
-        const excludes = (btn.getAttribute('data-excludes') ?? '').split(',')
-        excludes.forEach((name) => {
-          delete data[name]
-        })
-        submit('des', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        })
+      })
+      if (tabName === 'cipher') {
+        document.getElementById('perf').style.display = 'none'
+        document.getElementById('form').style.display = ''
+      } else {
+        document.getElementById('form').style.display = 'none'
+        document.getElementById('perf').style.display = ''
+        perf()
+      }
+    })
+  })
+
+  // Initialize form submission
+  document.getElementById('form').addEventListener('submit', (e) => {
+    e.preventDefault()
+    return false
+  })
+  document.querySelectorAll('#form [type="submit"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const data = {
+        type: btn.getAttribute('data-type')
+      }
+      const formData = new FormData(document.getElementById('form'))
+      formData.forEach((value, name) => {
+        data[name] = value
+      })
+      const excludes = (btn.getAttribute('data-excludes') ?? '').split(',')
+      excludes.forEach((name) => {
+        delete data[name]
+      })
+      submit('cipher', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
       })
     })
-    document.getElementById('button_generate-key').addEventListener('click', () => {
-      submit('des/key')
+  })
+
+  // Initialize key generation button
+  document.querySelectorAll('#dropdown_generate [data-generate]').forEach((e) => {
+    const group = e.closest('.dropdown')
+    e.addEventListener('click', (ev) => {
+      ev.preventDefault()
+      group.classList.remove('is-active')
+      submit('cipher/key?' + new URLSearchParams({
+        l: e.getAttribute('data-generate')
+      }))
     })
-  })();
+  })
+
+  // Initialize dropdowns
+  document.querySelectorAll('.dropdown [aria-haspopup]').forEach((e) => {
+    const group = e.closest('.dropdown')
+    e.addEventListener('click', () => {
+      group.classList.toggle('is-active')
+    })
+  })
+})();
 </script>
 </body>
 </html>

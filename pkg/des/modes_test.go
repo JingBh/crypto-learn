@@ -61,7 +61,7 @@ func TestModeCBC_Encipher(t *testing.T) {
 func TestModeCBC_Decipher(t *testing.T) {
 	for i, tt := range modeCBCTests {
 		out := CBC(tt.key, tt.iv).Decipher(tt.out)
-		if !bytes.Equal(out, PadZero(tt.in, 8)) {
+		if !bytes.Equal(out, tt.in) {
 			t.Errorf("#%d: key: %x in: %x out: %x want: %x", i, tt.key, tt.out, out, tt.in)
 		}
 	}
